@@ -63,7 +63,8 @@ export default {
   data() {
     return {
       //isMusicOn: false,
-      menu: [
+      menu: sessionStorage.menu ? JSON.parse(sessionStorage.menu) : []
+      /*menu: [
         {
           name: "测试运行",
           name_en: "Test Running",
@@ -111,7 +112,7 @@ export default {
           icon: "el-icon-setting",
           children: []
         }
-      ]
+      ]*/
     };
   },
   computed: {

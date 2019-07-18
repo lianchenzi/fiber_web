@@ -28,6 +28,15 @@ const AuthorityTest = resolve => require(["@/views/AuthorityTest"], resolve);
 // 404
 const Notfound = resolve => require(["@/views/Notfound"], resolve);
 
+//产品配置
+const Product = resolve => require(["@/views/Product"], resolve);
+
+//温箱转台配置
+const Wxzt = resolve => require(["@/views/Wxzt"], resolve);
+
+//板卡配置
+const Board = resolve => require(["@/views/Board"], resolve);
+
 Vue.use(Router);
 
 const router = new Router({
@@ -38,6 +47,7 @@ const router = new Router({
       name: "Login",
       meta: {
         requireAuth: false,
+        authLevel:3,
         title: "Login"
       },
       component: login
@@ -46,7 +56,8 @@ const router = new Router({
     {
       path: "/",
       meta: {
-        requireAuth: true
+        requireAuth: true,
+        authLevel:2
       },
       component: Layout,
       // redirect: '/notes', // 重定向到第一个子路由，否则只渲染Layout组件，这块儿使用时解除注释
@@ -56,6 +67,7 @@ const router = new Router({
           path: "all",
           meta: {
             requireAuth: true,
+            authLevel:2,
             title: "全部测试"
           },
           component: Config
@@ -64,6 +76,7 @@ const router = new Router({
           path: "standard",
           meta: {
             requireAuth: true,
+            authLevel:2,
             title: "军检测试"
           },
           component: Standard
@@ -72,6 +85,7 @@ const router = new Router({
           path: "defined",
           meta: {
             requireAuth: true,
+            authLevel:2,
             title: "自定义测试"
           },
           component: Defined
@@ -80,6 +94,7 @@ const router = new Router({
           path: "running",
           meta: {
             requireAuth: true,
+            authLevel:2,
             title: "测试运行"
           },
           component: Running
@@ -88,6 +103,7 @@ const router = new Router({
           path: "result",
           meta: {
             requireAuth: true,
+            authLevel:2,
             title: "结果查询"
           },
           component: Result
@@ -96,9 +112,38 @@ const router = new Router({
           path: "authority",
           meta: {
             requireAuth: true,
+            authLevel:2,
             title: "权限管理"
           },
           component: AuthorityTest
+        },
+        {
+          path: "product",
+          meta: {
+            requireAuth: true,
+            authLevel:1,
+            title: "产品配置"
+          },
+          component: Product
+        }
+        ,
+        {
+          path: "wxzt",
+          meta: {
+            requireAuth: true,
+            authLevel:0,
+            title: "温箱转台"
+          },
+          component: Wxzt
+        },
+        {
+          path: "board",
+          meta: {
+            requireAuth: true,
+            authLevel:0,
+            title: "板卡配置"
+          },
+          component: Board
         }
       ]
     },
@@ -118,8 +163,16 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   if (to.meta.requireAuth) {  // 判断该路由是否需要登录权限
     console.log('beforeEach获取当前的token是否存在  '+store.state.token)
-    if (store.state.token) {  // 通过vuex state获取当前的token是否存在
-      next();
+    if (store.state.token && sessionStorage.auth) {  // 通过vuex state获取当前的token是否存在
+      if (sessionStorage.auth<=to.meta.authLevel) {
+        next();
+      } else {
+        next({
+          path: '/running',
+          query: {redirect: to.fullPath}  // 将跳转的路由path作为参数，登录成功后跳转到该路由
+        })
+      }
+
     }
     else {
       next({

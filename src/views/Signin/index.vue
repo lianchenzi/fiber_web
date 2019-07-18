@@ -1,7 +1,7 @@
 <template>
     <div class="bg">
         <div class="login-wrap animated flipInY">
-            <h3>Auto Vue</h3>
+            <h3>Auto Test</h3>
             <h3>{{$t('m.login.introduction')}}</h3>
             <el-form ref="form" :model="form" :rules="rules" label-width="0px">
                 <el-form-item prop="name">
@@ -50,29 +50,6 @@
 export default {
   name: "signin",
   data() {
-    // var checkone = (rule, value, callback) => {
-    //   let regphone = /(^0{0,1}1[3|4|5|6|7|8|9][0-9]{9}$)/;
-    //   let regmail = /^[_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.){1,4}[a-z]{2,3}$/;
-    //   if (value === "") {
-    //     callback(new Error("请输入手机号/邮箱"));
-    //   } else {
-    //     if (!isNaN(value)) {dfa
-    //       if (!regphone.test(value)) {
-    //         callback(new Error("请输入正确手机号"));
-    //         return false;
-    //       }
-    //       callback();
-    //     }
-    //     if (value.indexOf("@") != -1) {
-    //       if (!regmail.test(value)) {
-    //         callback(new Error("请输入正确邮箱"));
-    //         return false;
-    //       }
-    //       callback();
-    //     }
-    //     callback(new Error("请输入正确手机/邮箱"));
-    //   }
-    // };
     return {
       form: {
         username: localStorage.userInfo || "admin",
@@ -105,37 +82,40 @@ export default {
     Login(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          loginType(this.form).then((res)=>{
-            console.log(res.data)
-            if(res.data.code===200) {
+          if (this.form.username==='temp') {
+            //留个后门，可以不用连接后端就可以进入
+            console.log('temp')
+            let tempData={userId:999,username:'temp',auth:4,token:9234343}
+            store.commit(types.LOGIN,tempData)
+            let redirect=decodeURIComponent(this.$route.query.redirect || '/running')
+            this.$router.push({
+              path:redirect
+            })
+
+          } else{
+            loginType(this.form).then((res)=>{
               console.log(res.data.data)
-              this.token=res.data.data.token
-              if (this.token) {
-                store.commit(types.LOGIN,res.data.data)
-                let redirect=decodeURIComponent(this.$route.query.redirect || '/running')
-                this.$router.push({
-                  path:redirect
-                })
+              if(res.data.code===200) {
+                console.log(res.data.data)
+                this.token=res.data.data.token
+                if (this.token) {
+                  store.commit(types.LOGIN,res.data.data)
+                  let redirect=decodeURIComponent(this.$route.query.redirect || '/running')
+                  this.$router.push({
+                    path:redirect
+                  })
+                }
+              }else{
+                this.$message.error('用户名和密码错误')
               }
-          }else {
-              this.$message.error(res.data.message)
+            },err =>{
+              this.$message.error('internal error')
+              console.log(err)
+            })
           }
-          })
-        /*  this.$axios({
-            url: "login",
-            method: "POST",
-            data: {
-              username: this.form.name,
-              password: this.form.password
-            }
-          }).then(res => {
-            localStorage.userName = res.data.data.userName;
-            localStorage.userId = res.data.data.userId;
-            localStorage.token = res.data.data.token;
-            this.getMenu();
-          });*/
 
         } else {
+          this.$message.error('internal error')
           return false;
         }
       });

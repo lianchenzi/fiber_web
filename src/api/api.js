@@ -6,11 +6,9 @@ export const loginType = params =>{
   return axios.post(`${base}/login`,Qs.stringify(params))
 };
 export const setupTest = params=>{
-  console.log(params)
   return axios.post(`${base}/task`,params)
 };
 
 export const getRunningInfo = params=>{
-  console.log(params)
   return axios.get(`${base}/running`)
 };
