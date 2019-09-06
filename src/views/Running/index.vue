@@ -3,46 +3,28 @@
     <el-row :gutter="20">
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card class="m-box-card" shadow="hover">
-          <div class="m-icon">
-            <i class="fa fa-tasks" style="color: #F56C6C;"></i>
-          </div>
-          <div class="m-content">
-            <p>运行状态</p>
+            <i class="fa fa-tasks" style="color: #F56C6C;"></i>  运行状态
             <p class="m-count">{{ info.running }}</p>
-          </div>
+
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card class="m-box-card" shadow="hover">
-          <div class="m-icon">
-            <i class="fa fa-cogs" style="color: #E6A23C;"></i>
-          </div>
-          <div class="m-content">
-            <p>正在进行</p>
+            <i class="fa fa-cogs" style="color: #E6A23C;"></i> 正在进行
             <p class="m-count">{{ info.test }}</p>
-          </div>
+
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card class="m-box-card" shadow="hover">
-          <div class="m-icon">
-            <i class="fa fa-thermometer" style="color: #67C23A;"></i>
-          </div>
-          <div class="m-content">
-            <p>温箱温度</p>
+            <i class="fa fa-thermometer" style="color: #67C23A;"></i>  温箱温度
             <p class="m-count">{{ info.temperature }}</p>
-          </div>
         </el-card>
       </el-col>
       <el-col :xs="24" :sm="12" :lg="6">
         <el-card class="m-box-card" shadow="hover">
-          <div class="m-icon">
-            <i class="fa fa-flash" style="color: #409EFF;"></i>
-          </div>
-          <div class="m-content">
-            <p>温箱电流</p>
+            <i class="fa fa-flash" style="color: #409EFF;"></i>  温箱电流
             <p class="m-count">{{ info.current }}</p>
-          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -50,14 +32,8 @@
       <el-col :span="24">
         <el-card class="m-box-card" shadow="hover">
           <div slot="header">
-            <div class="m-icon">
-              <i class="fa fa-line-chart" style="color: #408080"></i>
-            </div>
-            <div class="m-content">
-              <p>测试进度</p>
-            </div>
+              <i class="fa fa-line-chart" style="color: #408080"></i>  测试进度
           </div>
-
           <div>
             <el-tabs type="border-card" :value="activeName">
               <el-tab-pane v-for="(item, index) in testTask" :name=getIndex(index)  :label=getTestChsName(item.item)>
@@ -76,21 +52,38 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-row>
+    <el-row :span="24">
       <el-col :span="24">
-
+        <el-card class="m-box-card" shadow="hover">
+          <el-button type="warning" icon="fa fa-stop" :disabled="stopBtn" @click="ctrlRunning('stop')"> 停止测试</el-button>
+          <el-button type="primary" icon="el-icon-refresh" :disabled="refreshBtn" @click="ctrlRunning('restart')"> 重启测试</el-button>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-row :span="10">
+      <el-col :span="12">
         <el-card class="m-box-card" shadow="hover">
             <div slot="header">
-              <div class="m-icon">
-                <i class="fa  fa-superpowers" style="color: #EA7500"></i>
-              </div>
-              <div class="m-content">
-                <p>电压监控</p>
-              </div>
+                <i class="fa  fa-superpowers" style="color: #EA7500"></i>  电压监控
             </div>
           <div>
-           <ve-line :data="chartData3" :settings="chartSettings3"></ve-line>
+           <ve-line
+             :data="chartData3"
+             :extend="chartExtend"
+             :data-zoom="dataZoom"
+             :settings="chartSettings3">
+           </ve-line>
           </div>
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card class="m-box-card" shadow="hover">
+          <div slot="header">
+            <i class="fa  fa-superpowers" style="color: #EA7500"></i>  电流监控
+          </div>
+          <!--div>
+            <ve-line :data="chartData3"  :extend="chartExtend" :settings="chartSettings3" ></ve-line>
+          </div-->
         </el-card>
       </el-col>
     </el-row>
@@ -100,7 +93,7 @@
 <script>
   import VeLine from 'v-charts/lib/line.common'
   import VeScatter from 'v-charts/lib/scatter.common'
-  import {getRunningInfo} from '@/api/api'
+  import {getRunningInfo,runningControl} from '@/api/api'
 
   export default {
     name: 'FuncHome',
@@ -109,8 +102,39 @@
       VeScatter
     },
     data () {
+
+      this.grid = {
+        show: true,
+        top: 50,
+        left: 10,
+        backgroundColor: '#ccc',
+        borderColor: '#000'
+      }
       return {
-        activeName: "0",
+        stopBtn: true,
+        refreshBtn: true,
+        chartExtend:{
+          'xAxis.0.axisLabel.rotate': 45,
+          series: {
+            showSymbol: false,
+            type: 'line',
+            lineStyle: {
+              normal :{
+                width: 0.5
+              }
+            }
+          }
+        },
+        dataZoom : [
+          {
+            type: 'slider',
+            start: 0,
+            end: 20
+          }
+        ],
+         activeName: "0",
+        timer: 0,
+        filePath: "data\\2019-08-08\\10FA\\lp_normal\\0.log",
         testsDict :{
           'Busy':'工作中',
           'Ideal':'空闲',
@@ -134,7 +158,10 @@
           temperature: '℃',
           current: 'A'
         },
-
+        item :{
+          host: "http://localhost:5000",
+          link: "download"
+        },
         chartSettings3: {
           axisSite: '',
           digit: 8
@@ -146,6 +173,7 @@
       }
     },
     mounted(){
+      /*
       let param='empty=abc';
       getRunningInfo(param).then((res)=>{
         if(res.data.code===200) {
@@ -160,9 +188,30 @@
             this.initPageData()
           }
         }
-      })
+      })*/
+      /*
+      if(this.timer){
+        clearInterval(this.timer)
+      }else{
+        this.timer = setInterval(()=>{
+          // 调用相应的接口，渲染数据
+          this.getData()
+          console.log('hello')
+        },1000)
+      }*/
+      //this.toggleFullscreen();
+      //this.$store.state.isCollapse = true;
+      //this.toggleSiderBar();
+      this.getData()
+      //this.timer()
 
     },
+/*    updated() {
+      this.timer()
+    },*/
+    /*destroyed() {
+      clearTimeout(this.timer)
+    },*/
     methods: {
       tableRowClassName ({row, rowIndex}) {
         if (rowIndex === 1) {
@@ -175,9 +224,57 @@
       getTestChsName(name) {
         return this.testsDict[name]
       },
+      ctrlRunning(action) {
+        let param={'action': action}
+        //let param='action='+action
+        console.log(param)
+        runningControl(param).then((res)=>{
+            if(res.data.code===200) {
+              let msg=''
+              if (action==='stop')
+              {
+                msg='停止测试成功'
+                sessionStorage.testSession=''
+              }
+              else
+              {
+                msg='重启测试成功'
+              }
+              alert(msg)
+              sessionStorage.testSession=res.data.data.testSession
+            } else {
+              alert('操作失败')
+            }
+        }
+        )
+        this.getData()
+      },
       getIndex(idx) {
         return idx+''
       },
+      toggleSiderBar() {
+        this.$store.commit(types.TOGGLE)
+      },
+      toggleFullscreen() {
+        if (!screenfull.enabled) {
+          this.$message.warning('您的浏览器不支持全屏')
+          return false
+        }
+        //screenfull.toggle()
+        //screenfull.isFullscreen= true;
+        if (screenfull.isFullscreen === false) {
+          screenfull.toggle()
+        }
+        //screenfull.toggle()
+        // isFullscreen 居然是反的
+        this.isFullscreen = !screenfull.isFullscreen;
+      },
+      /*
+      timer() {
+        return setTimeout(()=>{
+          this.getData()
+        },2000)
+      },*/
       initPageData() {
         this.chartData3.columns=[]
         this.chartData3.rows=[]
@@ -187,21 +284,31 @@
         this.info.temperature='℃'
         this.info.running='空闲'
         this.info.test='无'
+        this.stopBtn=true
+        this.refreshBtn=true
       },
       updateChart(res) {
         //this.chartData3.rows.push({'time':res.data[0],'cpu':res.data[1]})
         if (JSON.stringify(res) == "{}") {
           this.chartData3.columns=[]
           this.chartData3.rows=[]
-
         }
         else {
+          this.stopBtn=false
+          this.refreshBtn=false
           if (res.test==='lp' || res.test==='lp_cfx') {
             this.chartSettings3.axisSite='time'
           }
           if (res.test==='bdys' || res.test==='bdys_cfx') {
             this.chartSettings3.axisSite='speed'
           }
+          //console.log(res.buf.length)
+          if (res.buf.length>100) {
+            this.dataZoom[0].start=res.buf.length-101
+          } else {
+            this.dataZoom[0].start=0
+          }
+          this.dataZoom[0].end=res.buf.length-1
           this.chartData3.columns=res.object
           this.chartData3.rows=res.buf
         }
@@ -221,6 +328,25 @@
         } else {
           return 'process'
         }
+      },
+      getData() {
+        let param='empty=abc';
+        getRunningInfo(param).then((res)=>{
+          if(res.data.code===200) {
+            console.log(res.data)
+            if (JSON.stringify(res.data.data) != "{}") {
+              this.updateBasicInfo(res.data.data.info)
+              this.testTask=res.data.data.status;
+              this.updateChart(res.data.data.buf);
+              this.getSelectedTab();
+              this.stopBtn=false
+              this.refreshBtn=false
+            } else {
+              console.log('empty')
+              this.initPageData()
+            }
+          }
+        })
       },
       getIcon(stat) {
         if (stat===0) {
@@ -259,7 +385,7 @@
 
     sockets: {
 
-      server_response: function (res) {
+     server_response: function (res) {
         //以下对接收来的数据进行操作
 
         console.log(res)
@@ -293,6 +419,9 @@
         this.chartSettings3.axisSite=''
         this.chartData3.rows=[]
         this.chartData3.columns=[]
+        this.stopBtn=true
+        this.refreshBtn=true
+        this.$router.push("runresult");
 
       },
       connect: function(){

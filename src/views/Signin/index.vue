@@ -53,7 +53,7 @@ export default {
     return {
       form: {
         username: localStorage.userInfo || "admin",
-        password: localStorage.passwordInfo || "654321"
+        password: localStorage.passwordInfo || "admin"
       },
       token:'',
       isMemery: false,
@@ -85,7 +85,7 @@ export default {
           if (this.form.username==='temp') {
             //留个后门，可以不用连接后端就可以进入
             console.log('temp')
-            let tempData={userId:999,username:'temp',auth:4,token:9234343}
+            let tempData={userId:999,username:'temp',auth:0,token:9234343}
             store.commit(types.LOGIN,tempData)
             let redirect=decodeURIComponent(this.$route.query.redirect || '/running')
             this.$router.push({

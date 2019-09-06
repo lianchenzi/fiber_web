@@ -80,14 +80,14 @@ export default new Vuex.Store({
         }
         if(sessionStorage.auth< 1) {
           addMenu.children.push(
-            {
+            /*{
               name: "转台温箱",
               name_en: "Wxzt Config",
               router: "/wxzt",
               icon: "el-icon-edit"
-            },
+            },*/
             {
-              name: "板卡配置",
+              name: "接口配置",
               name_en: "Board Config",
               router: "/board",
               icon: "el-icon-edit"
@@ -106,6 +106,6 @@ export default new Vuex.Store({
       sessionStorage.clear()
       sessionStorage.removeItem('token')
       state.token=null
-    },
+    }
   }
 })

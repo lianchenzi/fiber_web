@@ -34,8 +34,14 @@ const Product = resolve => require(["@/views/Product"], resolve);
 //温箱转台配置
 const Wxzt = resolve => require(["@/views/Wxzt"], resolve);
 
-//板卡配置
+//接口配置
 const Board = resolve => require(["@/views/Board"], resolve);
+
+//新增产品配置
+const NewProduct = resolve => require(["@/views/New"], resolve);
+
+//运行结果显示
+const RunResult = resolve => require(["@/views/RunResult"], resolve);
 
 Vue.use(Router);
 
@@ -109,13 +115,13 @@ const router = new Router({
           component: Result
         },
         {
-          path: "authority",
+          path: "runresult",
           meta: {
             requireAuth: true,
             authLevel:2,
-            title: "权限管理"
+            title: "运行结果"
           },
-          component: AuthorityTest
+          component: RunResult
         },
         {
           path: "product",
@@ -141,9 +147,18 @@ const router = new Router({
           meta: {
             requireAuth: true,
             authLevel:0,
-            title: "板卡配置"
+            title: "接口配置"
           },
           component: Board
+        },
+        {
+          path: "new",
+          meta: {
+            requireAuth: true,
+            authLevel:1,
+            title: "新增产品配置"
+          },
+          component: NewProduct
         }
       ]
     },
@@ -161,8 +176,10 @@ const router = new Router({
 
 // 当一个导航触发时，全局的 before 钩子按照创建顺序调用。钩子是异步解析执行，此时导航在所有钩子 resolve 完之前一直处于等待中。
 router.beforeEach((to, from, next) => {
+  if (from.path==='runresult') {
+    sessionStorage.testSession=null
+  }
   if (to.meta.requireAuth) {  // 判断该路由是否需要登录权限
-    console.log('beforeEach获取当前的token是否存在  '+store.state.token)
     if (store.state.token && sessionStorage.auth) {  // 通过vuex state获取当前的token是否存在
       if (sessionStorage.auth<=to.meta.authLevel) {
         next();

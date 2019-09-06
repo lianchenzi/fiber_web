@@ -1,6 +1,6 @@
 <template>
   <div>
-    温箱转台配置
+    新增产品
     <contact-card></contact-card>
   </div>
 </template>

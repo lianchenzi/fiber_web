@@ -9,7 +9,7 @@ import store from './store/store'
 import VueParticles from 'vue-particles'
 import i18n from './lang'
 import VueSocketIO from 'vue-socket.io'
-
+import htmlToPdf from './components/htmlToPdf'
 import * as utils from '@/utils'
 import 'font-awesome/scss/font-awesome.scss'
 // 在入口处引入模拟的假数据
@@ -20,6 +20,7 @@ import 'element-ui/lib/theme-chalk/index.css'
 import './assets/scss/element-variables.scss'
 import * as types from "./store/types";
 Vue.use(ElementUI);
+Vue.use(htmlToPdf);
 // 使用登录页粒子效果插件
 Vue.use(VueParticles)
 // 将axios绑定到vue原型上
