@@ -189,29 +189,29 @@
           }
         }
       })*/
-      /*
+      //console.log(sessionStorage)
       if(this.timer){
         clearInterval(this.timer)
       }else{
         this.timer = setInterval(()=>{
           // 调用相应的接口，渲染数据
           this.getData()
-          console.log('hello')
+          //console.log('hello')
         },1000)
-      }*/
+      }
       //this.toggleFullscreen();
       //this.$store.state.isCollapse = true;
       //this.toggleSiderBar();
-      this.getData()
+      //this.getData()
       //this.timer()
 
     },
-/*    updated() {
+    /*updated() {
       this.timer()
     },*/
-    /*destroyed() {
+    destroyed() {
       clearTimeout(this.timer)
-    },*/
+    },
     methods: {
       tableRowClassName ({row, rowIndex}) {
         if (rowIndex === 1) {
@@ -234,7 +234,8 @@
               if (action==='stop')
               {
                 msg='停止测试成功'
-                sessionStorage.testSession=''
+                sessionStorage.testSession= null
+                sessionStorage.removeItem(testSession)
               }
               else
               {
@@ -269,8 +270,8 @@
         // isFullscreen 居然是反的
         this.isFullscreen = !screenfull.isFullscreen;
       },
-      /*
-      timer() {
+      
+     /* timer() {
         return setTimeout(()=>{
           this.getData()
         },2000)
@@ -316,10 +317,10 @@
         //console.log(this.chartData3)
 
       },
-      send(){
+     /* send(){
         console.log('1111111');
         this.$socket.emit('message','1111111111');
-      },
+      },*/
       getStatus(stat) {
         if (stat===0) {
           return 'wait'
@@ -333,7 +334,7 @@
         let param='empty=abc';
         getRunningInfo(param).then((res)=>{
           if(res.data.code===200) {
-            console.log(res.data)
+            //console.log(res.data)
             if (JSON.stringify(res.data.data) != "{}") {
               this.updateBasicInfo(res.data.data.info)
               this.testTask=res.data.data.status;
@@ -342,8 +343,10 @@
               this.stopBtn=false
               this.refreshBtn=false
             } else {
-              console.log('empty')
               this.initPageData()
+              if ( sessionStorage.testSession && sessionStorage.testSession != "null" ) {
+                this.$router.push("runresult");
+              }
             }
           }
         })
@@ -383,7 +386,7 @@
       },
     },
 
-    sockets: {
+   /* sockets: {
 
      server_response: function (res) {
         //以下对接收来的数据进行操作
@@ -427,7 +430,7 @@
       connect: function(){
         console.log('socket connected')
       }
-    },
+    },*/
   }
 </script>
 

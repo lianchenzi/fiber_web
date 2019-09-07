@@ -58,7 +58,7 @@
 </template>
 
 <script>
-    import ElContainer from "../../dist/static/js/vendor";
+    //import ElContainer from "../../dist/static/js/vendor";
     export default {
       name: "ResultTable",
       //components: {ElContainer},

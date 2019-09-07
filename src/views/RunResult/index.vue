@@ -54,7 +54,7 @@
     },
     mounted() {
       //sessionStorage.testSession='ExsycmtfSnA7ETD'
-      if (sessionStorage.testSession!=null)
+      if (sessionStorage.testSession && sessionStorage.testSession!=null)
       {
         let param={'session':sessionStorage.testSession}
         getBhs(param).then((res)=>{
@@ -85,6 +85,12 @@
       this.$refs.resTable.updateTable(val)
       let info={bh: this.activeName}
       this.$refs.resTable.updateInfo(info)*/
+    },
+    destroyed() {
+      console.log(sessionStorage)
+      sessionStorage.testSession = null;
+      //sessionStorage.removeItem(testSession)
+      console.log(sessionStorage)
     },
     methods: {
       handleClick() {

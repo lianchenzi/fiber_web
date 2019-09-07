@@ -8,7 +8,7 @@ import axios from './api/http'
 import store from './store/store'
 import VueParticles from 'vue-particles'
 import i18n from './lang'
-import VueSocketIO from 'vue-socket.io'
+//import VueSocketIO from 'vue-socket.io'
 import htmlToPdf from './components/htmlToPdf'
 import * as utils from '@/utils'
 import 'font-awesome/scss/font-awesome.scss'
@@ -28,6 +28,7 @@ Vue.prototype.$axios = axios
 // Vue 的全局配置
 Vue.config.productionTip = false
 // 上线全局请求配置
+/*
 Vue.use(new VueSocketIO({
   debug: true,
   connection: 'http://localhost:5000/test',
@@ -37,7 +38,7 @@ Vue.use(new VueSocketIO({
     mutationPrefix: 'SOCKET_'
   }
 }))
-
+*/
 new Vue({
     el: '#app',
     i18n,
