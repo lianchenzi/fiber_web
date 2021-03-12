@@ -18,7 +18,7 @@
         "font-awesome": "^4.7.0",
         "html2canvas": "^1.0.0-rc.3",
         "jsonp": "^0.2.1",
-        "jspdf": "^1.5.3",
+        "jspdf": "^2.3.1",
         "mockjs": "^1.0.1-beta3",
         "qs": "latest",
         "rythm.js": "^2.2.1",
